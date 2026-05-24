@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Palette Guide</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace" aria-label="Image workspace">
+        <div class="topbar">
+          <div>
+            <h1>Palette Guide</h1>
+          </div>
+          <label class="file-button">
+            <input id="photoInput" type="file" accept="image/*">
+            <span>Upload Photo</span>
+          </label>
+        </div>
+
+        <div class="canvas-wrap" id="canvasWrap">
+          <canvas id="photoCanvas" aria-label="Editable image canvas"></canvas>
+          <div class="empty-state" id="emptyState">
+            <strong>Drop in a reference photo</strong>
+            <span>The app will apply a median-style filter and prepare color matching.</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel" aria-label="Controls and color suggestions">
+        <div class="control-group">
+          <h2>Filter</h2>
+          <label class="slider-row" for="medianRadius">
+            <span>Median amount</span>
+            <output id="medianValue">50</output>
+          </label>
+          <input id="medianRadius" type="range" min="0" max="100" step="1" value="50" disabled>
+          <button id="applyFilter" type="button" disabled>Apply Median Filter</button>
+        </div>
+
+        <div class="suggestion-card">
+          <div class="swatches">
+            <div>
+              <span class="label">Target</span>
+              <span id="targetSwatch" class="swatch"></span>
+            </div>
+            <div>
+              <span class="label">Recipe</span>
+              <span id="mixSwatch" class="swatch"></span>
+            </div>
+          </div>
+          <div id="suggestions" class="suggestions">
+            <h2>Mixture Suggestions</h2>
+            <p>Upload a photo, then click the image to get pigment ratios.</p>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
