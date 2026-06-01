@@ -270,11 +270,17 @@ input[type="range"] {
 
 .palette-row {
   display: grid;
-  grid-template-columns: 24px minmax(0, 1fr) auto;
+  grid-template-columns: 18px 24px minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px;
   min-height: 34px;
   font-size: 13px;
+}
+
+.palette-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
 }
 
 .palette-row button {

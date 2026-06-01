@@ -15,7 +15,7 @@ const paletteRows = document.querySelector("#paletteRows");
 const paletteCount = document.querySelector("#paletteCount");
 const fixedBrushSize = 75;
 
-const defaultPigments = [
+const pigmentLibrary = [
   { name: "titanium white", rgb: [246, 244, 232] },
   { name: "naples yellow", rgb: [236, 205, 112] },
   { name: "yellow ochre", rgb: [184, 132, 46] },
@@ -31,7 +31,7 @@ const defaultPigments = [
   { name: "ivory black", rgb: [20, 22, 22] }
 ];
 
-let pigments = [...defaultPigments];
+let selectedPigments = new Set();
 let originalImageData = null;
 let displayImageData = null;
 let isPointerDown = false;
@@ -67,9 +67,24 @@ pigmentName.addEventListener("keydown", (event) => {
 
 paletteRows.addEventListener("click", (event) => {
   const button = event.target.closest("[data-remove-index]");
-  if (!button) return;
-  const index = Number(button.dataset.removeIndex);
-  pigments.splice(index, 1);
+  if (button) {
+    const index = Number(button.dataset.removeIndex);
+    selectedPigments.delete(pigmentLibrary[index].name);
+    pigmentLibrary.splice(index, 1);
+    renderPaletteEditor();
+    refreshCurrentSuggestion();
+  }
+});
+
+paletteRows.addEventListener("change", (event) => {
+  const checkbox = event.target.closest("[data-pigment-index]");
+  if (!checkbox) return;
+  const pigment = pigmentLibrary[Number(checkbox.dataset.pigmentIndex)];
+  if (checkbox.checked) {
+    selectedPigments.add(pigment.name);
+  } else {
+    selectedPigments.delete(pigment.name);
+  }
   renderPaletteEditor();
   refreshCurrentSuggestion();
 });
@@ -235,8 +250,8 @@ function getCanvasPoint(event) {
 }
 
 function suggestForBrush(point) {
-  if (pigments.length < 1) {
-    resetSuggestions("Add at least one pigment to the palette.");
+  if (getActivePigments().length < 1) {
+    resetSuggestions("Check at least one pigment to build your palette.");
     return;
   }
   const target = sampleBrushColor(point);
@@ -258,18 +273,19 @@ function suggestForBrush(point) {
 
 function findRecipes(target) {
   const pairs = [];
-  if (pigments.length === 1) {
-    const only = pigments[0];
+  const activePigments = getActivePigments();
+  if (activePigments.length === 1) {
+    const only = activePigments[0];
     return [{
       parts: [{ ...only, ratio: 1 }],
       mixed: only.rgb,
       score: colorDistance(target, only.rgb)
     }];
   }
-  for (let i = 0; i < pigments.length; i++) {
-    for (let j = i; j < pigments.length; j++) {
-      for (let k = j; k < pigments.length; k++) {
-        const options = scoreRatios(target, [pigments[i], pigments[j], pigments[k]]);
+  for (let i = 0; i < activePigments.length; i++) {
+    for (let j = i; j < activePigments.length; j++) {
+      for (let k = j; k < activePigments.length; k++) {
+        const options = scoreRatios(target, [activePigments[i], activePigments[j], activePigments[k]]);
         pairs.push(...options);
       }
     }
@@ -291,7 +307,7 @@ function addPigment() {
     return;
   }
 
-  const existing = pigments.find((pigment) => pigment.name.toLowerCase() === name.toLowerCase());
+  const existing = pigmentLibrary.find((pigment) => pigment.name.toLowerCase() === name.toLowerCase());
   const nextPigment = {
     name,
     rgb: hexToRgb(pigmentColor.value)
@@ -300,7 +316,8 @@ function addPigment() {
   if (existing) {
     existing.rgb = nextPigment.rgb;
   } else {
-    pigments.push(nextPigment);
+    pigmentLibrary.push(nextPigment);
+    selectedPigments.add(nextPigment.name);
   }
 
   pigmentName.value = "";
@@ -309,14 +326,20 @@ function addPigment() {
 }
 
 function renderPaletteEditor() {
-  paletteCount.textContent = `${pigments.length} ${pigments.length === 1 ? "color" : "colors"}`;
-  paletteRows.innerHTML = pigments.map((pigment, index) => `
+  const selectedCount = getActivePigments().length;
+  paletteCount.textContent = `${selectedCount} selected`;
+  paletteRows.innerHTML = pigmentLibrary.map((pigment, index) => `
     <div class="palette-row">
+      <input type="checkbox" ${selectedPigments.has(pigment.name) ? "checked" : ""} data-pigment-index="${index}" aria-label="Use ${escapeHtml(pigment.name)}">
       <span class="palette-swatch" style="background: ${rgbCss(pigment.rgb)}"></span>
       <span>${escapeHtml(pigment.name)}</span>
       <button type="button" aria-label="Remove ${escapeHtml(pigment.name)}" data-remove-index="${index}">Remove</button>
     </div>
   `).join("");
+}
+
+function getActivePigments() {
+  return pigmentLibrary.filter((pigment) => selectedPigments.has(pigment.name));
 }
 
 function refreshCurrentSuggestion() {
