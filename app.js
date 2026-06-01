@@ -217,17 +217,18 @@ function redraw() {
 
 function drawBrushPreview() {
   if (!selectedPoint) return;
-  const radius = fixedBrushSize / 2;
+  const size = fixedBrushSize;
+  const half = size / 2;
+  const x = clamp(selectedPoint.x - half, 0, canvas.width - size);
+  const y = clamp(selectedPoint.y - half, 0, canvas.height - size);
   ctx.save();
-  ctx.beginPath();
-  ctx.arc(selectedPoint.x, selectedPoint.y, radius, 0, Math.PI * 2);
   ctx.fillStyle = selectedTargetColor
     ? `rgba(${selectedTargetColor[0]}, ${selectedTargetColor[1]}, ${selectedTargetColor[2]}, 0.72)`
     : "rgba(255, 255, 255, 0.18)";
   ctx.strokeStyle = "rgba(23, 107, 101, 0.95)";
   ctx.lineWidth = Math.max(2, Math.round(canvas.width / 360));
-  ctx.fill();
-  ctx.stroke();
+  ctx.fillRect(x, y, size, size);
+  ctx.strokeRect(x, y, size, size);
   ctx.restore();
 }
 
@@ -446,7 +447,8 @@ function setEnabled(enabled) {
 
 function setBusy(isBusy) {
   applyFilterButton.disabled = isBusy;
-  applyFilterButton.textContent = isBusy ? "Filtering..." : "Apply Median Filter";
+  document.body.classList.toggle("is-filtering", isBusy);
+  applyFilterButton.textContent = isBusy ? "⌛ Filtering..." : "Apply Median Filter";
 }
 
 function resetSuggestions(message) {
