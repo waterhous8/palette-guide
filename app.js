@@ -31,11 +31,19 @@ const pigmentLibrary = [
   { name: "ivory black", rgb: [20, 22, 22] }
 ];
 
-let selectedPigments = new Set();
+let selectedPigments = new Set([
+  "titanium white",
+  "yellow ochre",
+  "cadmium orange",
+  "alizarin crimson",
+  "raw umber",
+  "ivory black"
+]);
 let originalImageData = null;
 let displayImageData = null;
 let isPointerDown = false;
 let selectedPoint = null;
+let selectedTargetColor = null;
 
 renderPaletteEditor();
 
@@ -134,6 +142,7 @@ function loadBitmap(bitmap) {
   originalImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
   displayImageData = medianLikeFilter(originalImageData, Number(medianRadius.value));
   selectedPoint = null;
+  selectedTargetColor = null;
   emptyState.hidden = true;
   setEnabled(true);
   redraw();
@@ -163,8 +172,9 @@ function medianLikeFilter(imageData, amount) {
     out.set(source);
     return output;
   }
-  const radius = Math.max(1, Math.round(amount / 10));
-  const step = amount >= 70 ? 4 : amount >= 40 ? 3 : amount >= 20 ? 2 : 1;
+  const effectiveAmount = Math.min(120, amount * 1.2);
+  const radius = Math.max(1, Math.round(effectiveAmount / 10));
+  const step = effectiveAmount >= 84 ? 4 : effectiveAmount >= 48 ? 3 : effectiveAmount >= 24 ? 2 : 1;
   const valuesR = [];
   const valuesG = [];
   const valuesB = [];
@@ -211,7 +221,9 @@ function drawBrushPreview() {
   ctx.save();
   ctx.beginPath();
   ctx.arc(selectedPoint.x, selectedPoint.y, radius, 0, Math.PI * 2);
-  ctx.fillStyle = "rgba(255, 255, 255, 0.18)";
+  ctx.fillStyle = selectedTargetColor
+    ? `rgba(${selectedTargetColor[0]}, ${selectedTargetColor[1]}, ${selectedTargetColor[2]}, 0.72)`
+    : "rgba(255, 255, 255, 0.18)";
   ctx.strokeStyle = "rgba(23, 107, 101, 0.95)";
   ctx.lineWidth = Math.max(2, Math.round(canvas.width / 360));
   ctx.fill();
@@ -259,6 +271,7 @@ function suggestForBrush(point) {
     resetSuggestions("Try a larger brush or click further inside the photo.");
     return;
   }
+  selectedTargetColor = target;
   const recipes = findRecipes(target);
   const best = recipes[0];
   const mixed = mixRecipe(best.parts);
