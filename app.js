@@ -8,9 +8,14 @@ const applyFilterButton = document.querySelector("#applyFilter");
 const suggestions = document.querySelector("#suggestions");
 const targetSwatch = document.querySelector("#targetSwatch");
 const mixSwatch = document.querySelector("#mixSwatch");
+const pigmentName = document.querySelector("#pigmentName");
+const pigmentColor = document.querySelector("#pigmentColor");
+const addPigmentButton = document.querySelector("#addPigment");
+const paletteRows = document.querySelector("#paletteRows");
+const paletteCount = document.querySelector("#paletteCount");
 const fixedBrushSize = 75;
 
-const pigments = [
+const defaultPigments = [
   { name: "titanium white", rgb: [246, 244, 232] },
   { name: "naples yellow", rgb: [236, 205, 112] },
   { name: "yellow ochre", rgb: [184, 132, 46] },
@@ -18,13 +23,21 @@ const pigments = [
   { name: "pale rose blush", rgb: [226, 158, 158] },
   { name: "alizarin crimson", rgb: [128, 20, 42] },
   { name: "raw umber", rgb: [91, 65, 39] },
+  { name: "burnt umber", rgb: [99, 48, 29] },
+  { name: "cerulean blue", rgb: [42, 122, 165] },
+  { name: "cadmium yellow", rgb: [246, 199, 35] },
+  { name: "cadmium red", rgb: [190, 42, 32] },
+  { name: "transparent red oxide", rgb: [142, 55, 28] },
   { name: "ivory black", rgb: [20, 22, 22] }
 ];
 
+let pigments = [...defaultPigments];
 let originalImageData = null;
 let displayImageData = null;
 let isPointerDown = false;
 let selectedPoint = null;
+
+renderPaletteEditor();
 
 medianRadius.addEventListener("input", () => {
   medianValue.value = medianRadius.value;
@@ -39,6 +52,26 @@ photoInput.addEventListener("change", async (event) => {
   if (!file) return;
   const bitmap = await createImageBitmap(file);
   loadBitmap(bitmap);
+});
+
+addPigmentButton.addEventListener("click", () => {
+  addPigment();
+});
+
+pigmentName.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    addPigment();
+  }
+});
+
+paletteRows.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-remove-index]");
+  if (!button) return;
+  const index = Number(button.dataset.removeIndex);
+  pigments.splice(index, 1);
+  renderPaletteEditor();
+  refreshCurrentSuggestion();
 });
 
 canvas.addEventListener("pointerdown", (event) => {
@@ -202,6 +235,10 @@ function getCanvasPoint(event) {
 }
 
 function suggestForBrush(point) {
+  if (pigments.length < 1) {
+    resetSuggestions("Add at least one pigment to the palette.");
+    return;
+  }
   const target = sampleBrushColor(point);
   if (!target) {
     resetSuggestions("Try a larger brush or click further inside the photo.");
@@ -221,6 +258,14 @@ function suggestForBrush(point) {
 
 function findRecipes(target) {
   const pairs = [];
+  if (pigments.length === 1) {
+    const only = pigments[0];
+    return [{
+      parts: [{ ...only, ratio: 1 }],
+      mixed: only.rgb,
+      score: colorDistance(target, only.rgb)
+    }];
+  }
   for (let i = 0; i < pigments.length; i++) {
     for (let j = i; j < pigments.length; j++) {
       for (let k = j; k < pigments.length; k++) {
@@ -237,6 +282,48 @@ function findRecipes(target) {
     if (unique.size >= 3) break;
   }
   return [...unique.values()];
+}
+
+function addPigment() {
+  const name = pigmentName.value.trim();
+  if (!name) {
+    pigmentName.focus();
+    return;
+  }
+
+  const existing = pigments.find((pigment) => pigment.name.toLowerCase() === name.toLowerCase());
+  const nextPigment = {
+    name,
+    rgb: hexToRgb(pigmentColor.value)
+  };
+
+  if (existing) {
+    existing.rgb = nextPigment.rgb;
+  } else {
+    pigments.push(nextPigment);
+  }
+
+  pigmentName.value = "";
+  renderPaletteEditor();
+  refreshCurrentSuggestion();
+}
+
+function renderPaletteEditor() {
+  paletteCount.textContent = `${pigments.length} ${pigments.length === 1 ? "color" : "colors"}`;
+  paletteRows.innerHTML = pigments.map((pigment, index) => `
+    <div class="palette-row">
+      <span class="palette-swatch" style="background: ${rgbCss(pigment.rgb)}"></span>
+      <span>${escapeHtml(pigment.name)}</span>
+      <button type="button" aria-label="Remove ${escapeHtml(pigment.name)}" data-remove-index="${index}">Remove</button>
+    </div>
+  `).join("");
+}
+
+function refreshCurrentSuggestion() {
+  if (selectedPoint && displayImageData) {
+    suggestForBrush(selectedPoint);
+    redraw();
+  }
 }
 
 function scoreRatios(target, selected) {
@@ -289,7 +376,7 @@ function recipeMarkup(recipe, index) {
       <div class="ratio-grid">
         ${recipe.parts.map((part) => `
           <div class="ratio-row">
-            <span>${part.name}</span>
+            <span>${escapeHtml(part.name)}</span>
             <span>${Math.round(part.ratio * 100)}%</span>
             <div class="bar" style="grid-column: 1 / -1">
               <span style="width: ${Math.round(part.ratio * 100)}%; background: ${rgbCss(part.rgb)}"></span>
@@ -337,6 +424,24 @@ function resetSuggestions(message) {
 
 function rgbCss(rgb) {
   return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+}
+
+function hexToRgb(hex) {
+  const value = hex.replace("#", "");
+  return [
+    parseInt(value.slice(0, 2), 16),
+    parseInt(value.slice(2, 4), 16),
+    parseInt(value.slice(4, 6), 16)
+  ];
+}
+
+function escapeHtml(value) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 function clamp(value, min, max) {

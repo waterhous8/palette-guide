@@ -187,7 +187,7 @@ canvas {
 
 .control-group,
 .suggestion-card,
-.palette {
+.palette-editor {
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 14px;
@@ -211,6 +211,83 @@ canvas {
 input[type="range"] {
   width: 100%;
   accent-color: var(--accent);
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.panel-head span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.palette-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 68px 64px;
+  gap: 8px;
+  align-items: end;
+  margin-bottom: 12px;
+}
+
+.palette-form label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.palette-form input[type="text"] {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 0 10px;
+  background: white;
+  color: var(--ink);
+}
+
+.palette-form input[type="color"] {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 3px;
+  background: white;
+}
+
+.palette-rows {
+  display: grid;
+  gap: 6px;
+  max-height: 224px;
+  overflow: auto;
+}
+
+.palette-row {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  font-size: 13px;
+}
+
+.palette-row button {
+  min-height: 30px;
+  padding: 0 9px;
+  font-size: 12px;
+}
+
+.palette-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.16);
 }
 
 .swatches {
@@ -284,30 +361,6 @@ input[type="range"] {
   display: block;
   height: 8px;
   background: var(--accent);
-}
-
-.pigment-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.pigment {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.pigment span:first-child {
-  flex: 0 0 22px;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.16);
 }
 
 @media (max-width: 940px) {

@@ -39,6 +39,25 @@
           <button id="applyFilter" type="button" disabled>Apply Median Filter</button>
         </div>
 
+        <div class="palette-editor">
+          <div class="panel-head">
+            <h2>Palette</h2>
+            <span id="paletteCount">0 colors</span>
+          </div>
+          <div class="palette-form">
+            <label>
+              <span>Name</span>
+              <input id="pigmentName" type="text" placeholder="Pigment name">
+            </label>
+            <label>
+              <span>Color</span>
+              <input id="pigmentColor" type="color" value="#b8842e">
+            </label>
+            <button id="addPigment" type="button">Add</button>
+          </div>
+          <div id="paletteRows" class="palette-rows" aria-label="Editable pigment palette"></div>
+        </div>
+
         <div class="suggestion-card">
           <div class="swatches">
             <div>
