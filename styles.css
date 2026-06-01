@@ -150,15 +150,16 @@ canvas {
   max-width: 100%;
   max-height: calc(100vh - 126px);
   background: #ffffff;
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke='%231d2423' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 4l7 7-12 12-7-7L21 4z' fill='%23ffffff'/%3E%3Cpath d='M8 17l7 7-3 3c-2 2-6 1-8 1 0-2-1-6 1-8l3-3z' fill='%23ffffff'/%3E%3Cpath d='M18 7l7 7'/%3E%3C/g%3E%3C/svg%3E") 6 26, pointer;
+  cursor: crosshair;
   touch-action: none;
   user-select: none;
   -webkit-user-drag: none;
 }
 
 body.is-filtering,
-body.is-filtering canvas {
-  cursor: wait;
+body.is-filtering *,
+body.is-filtering button:disabled {
+  cursor: wait !important;
 }
 
 .empty-state {
