@@ -16,7 +16,7 @@ No environment variables are required.
 4. Use these deployment settings:
    - Framework Preset: `Other`
    - Build Command: leave blank
-   - Output Directory: `.`
+   - Output Directory: `public`
    - Install Command: leave blank
 5. Deploy.
 
