@@ -4,4 +4,4 @@ node_modules/
 Thumbs.db
 *.out.txt
 *.err.txt
-package-lock.json
+dist/

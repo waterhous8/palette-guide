@@ -14,10 +14,10 @@ No environment variables are required.
 2. Push this folder to that repository.
 3. In Vercel, import the GitHub repository.
 4. Use these deployment settings:
-   - Framework Preset: `Other`
-   - Build Command: leave blank
-   - Output Directory: `.`
-   - Install Command: leave blank
+   - Framework Preset: `Vite`
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+   - Install Command: `npm install`
 5. Deploy.
 
-This is a static browser app. It does not need Node.js, server functions, or environment variables.
+This is a static browser app built with Vite. It does not need server functions or environment variables.
