@@ -19,3 +19,5 @@ No environment variables are required.
    - Output Directory: `.`
    - Install Command: leave blank
 5. Deploy.
+
+This is a static browser app. It does not need Node.js, server functions, or environment variables.
