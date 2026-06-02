@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Palette Guide</title>
+    <link rel="stylesheet" href="./palette-guide.css">
+    <script type="module" crossorigin src="./assets/index-B5Qt9EMX.js"></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace" aria-label="Image workspace">
+        <div class="topbar">
+          <div>
+            <h1>Palette Guide</h1>
+          </div>
+          <label class="file-button">
+            <input id="photoInput" type="file" accept="image/*">
+            <span>Upload Image</span>
+          </label>
+        </div>
+
+        <div class="canvas-wrap" id="canvasWrap">
+          <canvas id="photoCanvas" aria-label="Editable image canvas"></canvas>
+          <div class="empty-state" id="emptyState">
+            <strong>Upload Image</strong>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel" aria-label="Controls and color suggestions">
+        <div class="control-group">
+          <h2>Filter</h2>
+          <label class="slider-row" for="medianRadius">
+            <span>Median amount</span>
+            <output id="medianValue">50</output>
+          </label>
+          <input id="medianRadius" type="range" min="0" max="100" step="1" value="50" disabled>
+          <button id="applyFilter" type="button" disabled>Apply Median Filter</button>
+        </div>
+
+        <div class="palette-editor">
+          <div class="panel-head">
+            <h2>Palette</h2>
+            <span id="paletteCount">0 selected</span>
+          </div>
+          <div class="palette-form">
+            <label>
+              <span>Name</span>
+              <input id="pigmentName" type="text" placeholder="Pigment name">
+            </label>
+            <label>
+              <span>Color</span>
+              <input id="pigmentColor" type="color" value="#b8842e">
+            </label>
+            <button id="addPigment" type="button">Add</button>
+          </div>
+          <div id="paletteRows" class="palette-rows" aria-label="Selectable pigment palette"></div>
+        </div>
+
+        <div class="suggestion-card">
+          <div class="swatches">
+            <div>
+              <span class="label">Target</span>
+              <span id="targetSwatch" class="swatch"></span>
+            </div>
+            <div>
+              <span class="label">Recipe</span>
+              <span id="mixSwatch" class="swatch"></span>
+            </div>
+          </div>
+          <div id="suggestions" class="suggestions">
+            <h2>Mixture Suggestions</h2>
+            <p>Upload a photo, then click the image to get pigment ratios.</p>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <script type="module" src="./palette-guide.js"></script>
+  </body>
+</html>
