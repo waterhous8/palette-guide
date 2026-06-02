@@ -20,4 +20,4 @@ No environment variables are required.
    - Install Command: `npm install`
 5. Deploy.
 
-This is a static browser app built with Vite. It does not need server functions or environment variables.
+This is a static browser app built with Vite. Browser code is served from `public/` as static assets; it does not need server functions or environment variables.
